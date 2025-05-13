@@ -1,0 +1,13 @@
+[package]
+name = "user"
+version = "0.0.0"
+edition = "2021"
+authors = ["Christopher Berner <me@cberner.com>", "Casey Rodarmor <casey@rodarmor.com>"]
+license = "CC0-1.0"
+description = "A Rust project"
+repository = "https://github.com/casey/user"
+
+[dependencies]
+dirs = "5.0.1"
+llm = { version = "1.2.3", features = ["openai"] }
+tokio = { version = "1.0", features = ["full"] }
