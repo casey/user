@@ -3,7 +3,7 @@ use {
     builder::{LLMBackend, LLMBuilder},
     chat::ChatMessage,
   },
-  std::{env, fs, os::unix::fs::PermissionsExt, process::Command},
+  std::{env, fs, os::unix::fs::PermissionsExt, process::Command, str},
 };
 
 #[tokio::main]
@@ -22,30 +22,38 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     .stream(false)
     .build()?;
 
+  let mut history = Vec::new();
+
   let message = ChatMessage::user().content(&contents).build();
 
-  let response = llm.chat(&[message]).await?;
+  history.push(message);
 
-  let text = response.text().unwrap();
+  loop {
+    let response = llm.chat(&history).await?;
 
-  println!("{text}");
+    let text = response.text().unwrap();
 
-  let script = "./script.bash";
+    println!("{text}");
 
-  fs::write(script, text)?;
+    let script = "./script.bash";
 
-  let metadata = fs::metadata(script)?;
-  let mut permissions = metadata.permissions();
+    fs::write(script, &text)?;
 
-  permissions.set_mode(permissions.mode() | 0o111);
+    let metadata = fs::metadata(script)?;
+    let mut permissions = metadata.permissions();
+    permissions.set_mode(permissions.mode() | 0o111);
+    fs::set_permissions(script, permissions)?;
 
-  fs::set_permissions(script, permissions)?;
+    let output = Command::new(script).output()?;
 
-  let status = Command::new(script).status()?;
+    if !output.status.success() {
+      panic!("Command failed: {}", output.status);
+    }
 
-  if !status.success() {
-    panic!("Command failed: {status}");
+    let stdout = str::from_utf8(&output.stdout).unwrap();
+
+    history.push(ChatMessage::assistant().content(&text).build());
+
+    history.push(ChatMessage::user().content(stdout).build());
   }
-
-  Ok(())
 }
