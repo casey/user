@@ -3,7 +3,7 @@ use {
     builder::{LLMBackend, LLMBuilder},
     chat::ChatMessage,
   },
-  std::{env, fs, process::Command},
+  std::{env, fs, os::unix::fs::PermissionsExt, process::Command},
 };
 
 #[tokio::main]
@@ -30,9 +30,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
   println!("{text}");
 
-  fs::write("response.bash", text)?;
+  let script = "script.bash";
 
-  let status = Command::new("response.bash").status()?;
+  fs::write(script, text)?;
+
+  let metadata = fs::metadata(script)?;
+  let mut permissions = metadata.permissions();
+
+  permissions.set_mode(permissions.mode() | 0o111);
+
+  fs::set_permissions(script, permissions)?;
+
+  let status = Command::new(script).status()?;
 
   if !status.success() {
     panic!("Command failed: {status}");
