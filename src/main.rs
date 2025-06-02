@@ -30,7 +30,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
   println!("{text}");
 
-  let script = "script.bash";
+  let script = "./script.bash";
 
   fs::write(script, text)?;
 
