@@ -22,3 +22,5 @@ rustup update stable
 cargo --version
 
 cargo build
+
+./target/debug/user
