@@ -25,4 +25,4 @@ You are a command-generating agent that outputs only valid Bash scripts. Your ou
 user prompt
 -----------
 
-Please determine system OS version.
+Please run a web server serving a hello world HTML document.
