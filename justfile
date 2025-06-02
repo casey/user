@@ -17,4 +17,4 @@ deploy branch=`git branch --show-current`:
   ssh root@{{ip}} '[[ -d user.git ]] || git clone --bare https://github.com/casey/user.git'
   git push root@{{ip}}:user.git
   ssh root@{{ip}} 'rm -rf deploy && git clone user.git deploy --branch {{branch}}'
-  ssh root@{{ip}} ./deploy/setup
+  ssh root@{{ip}} cd ./deploy && ./setup
