@@ -29,4 +29,4 @@ You are a command-generating agent that outputs only valid Bash scripts. Your ou
 user prompt
 -----------
 
-Find the nginx logs and look for suspicious behavior.
+Please start an echo server which listens on port 1337.
