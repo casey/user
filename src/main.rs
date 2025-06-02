@@ -3,7 +3,7 @@ use {
     builder::{LLMBackend, LLMBuilder},
     chat::ChatMessage,
   },
-  std::{env, fs},
+  std::{env, fs, process::Command},
 };
 
 #[tokio::main]
@@ -26,7 +26,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
   let response = llm.chat(&[message]).await?;
 
-  println!("{response}");
+  let text = response.text().unwrap();
+
+  println!("{text}");
+
+  fs::write("response.bash", text)?;
+
+  let status = Command::new("response.bash").status()?;
+
+  if !status.success() {
+    panic!("Command failed: {status}");
+  }
 
   Ok(())
 }
