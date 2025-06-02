@@ -18,4 +18,4 @@ deploy branch=`git branch --show-current`:
   git push root@{{ip}}:user.git
   ssh root@{{ip}} '[[ -d deploy ]] || git clone user.git deploy'
   ssh root@{{ip}} 'cd deploy && git reset --hard && git clean -fd && git switch {{branch}} && git pull'
-  ssh root@{{ip}} -o SendEnv=OPENAI_API_KEY 'cd ./deploy && ./setup'
+  ssh -o SendEnv=OPENAI_API_KEY root@{{ip}} 'cd ./deploy && ./setup'
