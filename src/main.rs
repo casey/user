@@ -1,32 +1,68 @@
 use {
-    llm::{
-        builder::{LLMBackend, LLMBuilder},
-        chat::ChatMessage,
-    },
-    std::{env, fs},
+  llm::{
+    builder::{LLMBackend, LLMBuilder},
+    chat::ChatMessage,
+  },
+  std::{env, fs, os::unix::fs::PermissionsExt, process::Command, str},
 };
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let home = dirs::home_dir().ok_or("failed to get home directory")?;
-    let readme = home.join("README.md");
-    let contents = fs::read_to_string(&readme)?;
+  let home = dirs::home_dir().ok_or("failed to get home directory")?;
+  let readme = home.join("README.md");
+  let contents = fs::read_to_string(&readme)?;
 
-    let api_key = env::var("OPENAI_API_KEY")
-        .map_err(|_| "OPENAI_API_KEY environment variable not set or not valid unicode")?;
+  let api_key = env::var("OPENAI_API_KEY")
+    .map_err(|_| "OPENAI_API_KEY environment variable not set or not valid unicode")?;
 
-    let llm = LLMBuilder::new()
-        .backend(LLMBackend::OpenAI)
-        .api_key(&api_key)
-        .model("gpt-3.5-turbo")
-        .stream(false)
-        .build()?;
+  let llm = LLMBuilder::new()
+    .backend(LLMBackend::OpenAI)
+    .api_key(&api_key)
+    .model("gpt-4.1-mini")
+    .stream(false)
+    .build()?;
 
-    let message = ChatMessage::user().content(&contents).build();
+  let mut history = Vec::new();
 
-    let response = llm.chat(&[message]).await?;
+  let message = ChatMessage::user().content(&contents).build();
 
-    println!("{response}");
+  history.push(message);
 
-    Ok(())
+  loop {
+    let response = llm.chat(&history).await?;
+
+    let text = response.text().unwrap();
+
+    println!("{text}");
+
+    let script = "./script.bash";
+
+    fs::write(script, &text)?;
+
+    let metadata = fs::metadata(script)?;
+    let mut permissions = metadata.permissions();
+    permissions.set_mode(permissions.mode() | 0o111);
+    fs::set_permissions(script, permissions)?;
+
+    let output = Command::new(script).output()?;
+
+    let stdout = str::from_utf8(&output.stdout).unwrap();
+
+    let stderr = str::from_utf8(&output.stderr).unwrap();
+
+    eprintln!("\nstdout:\n{stdout}");
+    eprintln!("\nstderr:\n{stderr}");
+
+    if output.status.code() == Some(74) {
+      panic!("Terminated");
+    }
+
+    history.push(ChatMessage::assistant().content(&text).build());
+
+    history.push(
+      ChatMessage::user()
+        .content(format!("stderr:\n{stderr}\n\nstdout:{stdout}"))
+        .build(),
+    );
+  }
 }

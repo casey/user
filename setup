@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+export DEBIAN_FRONTEND=noninteractive
+
+touch ~/.hushlogin
+
+apt-get install --yes \
+  clang \
+  pkg-config \
+  libssl-dev
+
+if [[ ! -e ~/.cargo/env ]]; then
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+fi
+
+source ~/.cargo/env
+
+rustup update stable
+
+cargo --version
+
+cargo build
+
+cp README.md ~
+
+./target/debug/user
