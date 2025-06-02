@@ -29,4 +29,4 @@ You are a command-generating agent that outputs only valid Bash scripts. Your ou
 user prompt
 -----------
 
-Please start an echo server which listens on port 1337.
+Please find and terminate your own process.

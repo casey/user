@@ -3,7 +3,7 @@ watch +args='test':
 
 ip := '173.255.220.115'
 
-echo:
+telnet:
   telnet {{ip}} 1337
 
 ssh:
