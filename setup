@@ -7,7 +7,8 @@ export DEBIAN_FRONTEND=noninteractive
 touch ~/.hushlogin
 
 apt-get install --yes \
-  clang
+  clang \
+  pkg-config
 
 if [[ ! -e ~/.cargo/env ]]; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
