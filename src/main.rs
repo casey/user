@@ -59,6 +59,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     history.push(ChatMessage::assistant().content(&text).build());
 
-    history.push(ChatMessage::user().content(stdout).build());
+    history.push(
+      ChatMessage::user()
+        .content(format!("stderr:\n{stderr}\n\nstdout:{stdout}"))
+        .build(),
+    );
   }
 }
