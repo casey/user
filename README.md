@@ -29,4 +29,4 @@ You are a command-generating agent that outputs only valid Bash scripts. Your ou
 user prompt
 -----------
 
-Make this computer more fun. Please interpret "fun" liberally.
+Please set up this computer however you wish, to maximize your happiness and productivity.
