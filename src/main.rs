@@ -46,11 +46,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let output = Command::new(script).output()?;
 
-    if !output.status.success() {
-      panic!("Command failed: {}", output.status);
-    }
-
     let stdout = str::from_utf8(&output.stdout).unwrap();
+
+    let stderr = str::from_utf8(&output.stderr).unwrap();
+
+    eprintln!("\nstdout:\n{stdout}");
+    eprintln!("\nstderr:\n{stderr}");
+
+    if output.status.code() == Some(74) {
+      panic!("Terminated");
+    }
 
     history.push(ChatMessage::assistant().content(&text).build());
 
