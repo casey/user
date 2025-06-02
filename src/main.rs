@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   let llm = LLMBuilder::new()
     .backend(LLMBackend::OpenAI)
     .api_key(&api_key)
-    .model("gpt-3.5-turbo")
+    .model("gpt-4.1-mini")
     .stream(false)
     .build()?;
 
