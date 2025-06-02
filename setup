@@ -10,4 +10,8 @@ if [[ ! -e ~/.cargo/env ]]; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 fi
 
+source ~/.cargo/env
+
+rustup update stable
+
 cargo --version
