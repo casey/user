@@ -23,4 +23,6 @@ cargo --version
 
 cargo build
 
+cp README.md ~
+
 ./target/debug/user
