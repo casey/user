@@ -15,3 +15,5 @@ source ~/.cargo/env
 rustup update stable
 
 cargo --version
+
+cargo build
